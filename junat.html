@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initia-scale=1" />
+    <meta name="keywords" content="">
+    <meta name="description" content="JSON harjoitus">
+    <meta name="author" content="Katja Maria Nyman">
+    <title>JSON harjoitus osa 2</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+</head>
+
+
+<body>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <!-- <a class="navbar-brand" href="index.html">KATJA MARIA NYMAN</a> -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Etusivu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="saa.html">Säätiedot</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tapahtumat.html">Tapahtumat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="liikennekamera.html">Liikenne</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="junat.html">Junat</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="container-fluid  ms-3 mt-3 me-2 mb-2">
+
+        <div id="vastaus">
+            <script>
+                fetch('https://rata.digitraffic.fi/api/v1/live-trains/station/HKI?departing_trains=100&include_nonstopping=false')
+                    // Muunnetaan vastaus JSON muotoon 
+                    .then(function (response) {
+                        return response.json();
+                    })
+                    // Käsitellään muunnettu (eli JSON muotoinen) vastaus 
+                    .then(function (responseJson) {
+                        // Kutsutaan funktiota ja välitetään sille json-vastaus 
+                        junat(responseJson);
+                    })
+                    // Jos tuli jokin virhe 
+                    .catch(function (error) {
+                        document.getElementById("vastaus").innerHTML =
+                            "<p>Tietoa ei pystytä hakemaan</p>";
+                    })
+
+                function junat(data) {
+                    var teksti = ""; // määritellään muuttuja, johon tulostettava tieto kerätään
+
+                    // otsikkotiedon hakeminen ja sijoittaminen h1-elementtiin
+                    teksti = "<h2>Junat Helsinki-Tampere</h2>";
+
+                    // tähän tulee muiden tietojen käsittely kohta
+                    // teksti-muuttujan sisällön tulostus 
+                    teksti = teksti + "<br><ul>"
+                    for (var i = 0; i < data.length; i++) {
+                        //console.log(data[i].trainNumber);
+                        for (var j = 0; j < data[i].timeTableRows.length; j++) {
+                            //console.log(data[i].timeTableRows)
+                            if (data[i].timeTableRows[j].stationShortCode == "TPE") {
+                                //console.log(data[i].timeTableRows[j])
+                                if (data[i].timeTableRows[j].type == "DEPARTURE") {
+                                    //console.log(data[i].timeTableRows[j])
+
+                                    teksti = teksti + "<p>" + data[i].timeTableRows[0].stationShortCode;
+
+                                    var vika = data[i].timeTableRows.length - 1;
+                                    teksti = teksti + " - " + data[i].timeTableRows[vika].stationShortCode + "</p>";
+
+                                    var pvm = data[i].timeTableRows[j].scheduledTime;
+                                    var aika = pvm.substr(0, 10) + " kello: " + pvm.substr(11, 5);
+
+                                    teksti = teksti + "<p>Lähtö: " + aika + "</p>";
+                                    teksti = teksti + "<br><br>";
+                                }
+                            }
+
+
+
+                            //if (data.cameraStations[i].cameraPresets[j].presentationName == "Tie 3 Tampereelle" || data.cameraStations[i].cameraPresets[j].presentationName == "Tie 3") {
+                            //  teksti = teksti + "<h3>" + data.cameraStations[i].cameraPresets[j].presentationName + "</h3>";
+                            //teksti = teksti + "<br><p>" + data.cameraStations[i].cameraPresets[j].measuredTime + "</p>";
+                            //teksti = teksti + "<br><p>" + "<a href=" + data.cameraStations[i].cameraPresets[j].imageUrl + ">" + data.cameraStations[i].cameraPresets[j].imageUrl + "</a></p>";
+                            //teksti = teksti + "<br><p><img src='" + data.cameraStations[i].cameraPresets[j].imageUrl + "' width=90% alt='tieliikenne' ></p>";
+                            //teksti = teksti + "<br><br><br>";
+                            // }
+                            //}
+                        }
+                    }
+
+                    teksti = teksti + "</ul>";
+
+                    document.getElementById("vastaus").innerHTML = teksti;
+                }
+
+            </script>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+        integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
