@@ -5,4 +5,4 @@ I used Bootstrap to add the navigation bar on top of the page. In some pages I u
 
 View the page: https://katjamn.github.io/Helsinki-Tampere-with-JSON/index.html
 
-(The event page seems to be not working today.)
+(The event page seems to be not working today 21.3.2023.)
